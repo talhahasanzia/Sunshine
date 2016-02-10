@@ -2,5 +2,6 @@
     <string name="app_name">SunshineApplication</string>
     <string name="action_settings">Settings</string>
     <string name="refresh">Refresh</string>
+    <string name="zip">Enter Zip Code</string>
 
 </resources>

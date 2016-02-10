@@ -1,8 +1,14 @@
 package com.example.me.sunshineapplication;
 
+import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -12,8 +18,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,7 +39,30 @@ import java.util.List;
 public class MainActivityFragment extends Fragment {
 
 
+    String ZipCode="94043";
+    String Source_URL="http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7";
+    String API_Key="b45c4a4178ceaa8cfbf6a36b2156cf34";
+
     View rootView=null;
+
+
+   private TextWatcher tw=new TextWatcher() {
+       @Override
+       public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+       }
+
+       @Override
+       public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+       }
+
+       @Override
+       public void afterTextChanged(Editable s) {
+            ZipCode=s.toString();
+       }
+   };
+
 
     public MainActivityFragment() {
     }
@@ -45,6 +76,25 @@ public class MainActivityFragment extends Fragment {
         setHasOptionsMenu(true);
 
 
+        //Toolbar tb=(Toolbar)getActivity().findViewById(R.id.toolbar);
+
+        TextView toolbarTextView  = (TextView) ((MainActivity) this.getActivity()).findViewById(R.id.toolbar);
+        if( toolbarTextView==null)
+            Log.d("Toolbar","Toolbar not found");
+        else
+            Log.d("Toolbar","Toolbar found");
+        try {
+            //EditText et = (EditText) tb.findViewById(R.id.myEditText);
+        }
+        catch (Exception ec)
+        {
+
+
+            Log.d("Edit Text"," New Edit Text not found",ec);
+        }
+      //    et.addTextChangedListener(tw);
+
+
         return rootView;
 
     }
@@ -52,15 +102,22 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
-        inflater.inflate(R.menu.action_refresh,menu);
+
+        inflater.inflate(R.menu.forecast_fragment,menu);
+
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId()==R.id.action_refresh_label)
+
+
+        if(item.getItemId()==R.id.action_refresh) {
+            //new MainActivityFragment.NetworkTask().execute(ZipCode);
             return true;
+        }
         else
             return false;
+
     }
 
     @Override
@@ -75,12 +132,27 @@ public class MainActivityFragment extends Fragment {
             try {
                 ListView lv = (ListView) rootView.findViewById(R.id.listView);
 
+
+
+                Uri.Builder ub=new Uri.Builder();
+                ub.scheme("http").authority("api.openweathermap.org").appendPath("data")
+                        .appendPath("2.5")
+                        .appendPath("forecast")
+                        .appendPath("daily")
+                        .appendQueryParameter("q",ZipCode)
+                        .appendQueryParameter("mode","json")
+                        .appendQueryParameter("units","metric")
+                        .appendQueryParameter("cnt","7")
+                        .appendQueryParameter("APPID", API_Key);
+
                 List<String> dataList = new ArrayList<String>();
 
                 dataList.add("One data");
                 dataList.add("Two data");
                 dataList.add("Three data");
                 dataList.add("Big data");
+
+                dataList.add(ub.toString());
 
                 ArrayAdapter<String> mAdapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_layout, R.id.list_text_view,dataList);
                 lv.setAdapter(mAdapter);
@@ -89,10 +161,8 @@ public class MainActivityFragment extends Fragment {
 
 
 
-                String Source_URL="http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7";
-                String API_Key="&APPID=b45c4a4178ceaa8cfbf6a36b2156cf34";
 
-                new NetworkTask().execute(Source_URL.concat(API_Key));
+
 
             }
             catch (Exception ex)
@@ -126,7 +196,18 @@ public class MainActivityFragment extends Fragment {
 
             try {
 
-                URL requestUrl = new URL(params[0]);  // set link
+                Uri.Builder ub=new Uri.Builder();
+                ub.scheme("http").authority("api.openweathermap.org").appendPath("data")
+                        .appendPath("2.5")
+                        .appendPath("forecast")
+                        .appendPath("daily")
+                        .appendQueryParameter("q", params[0])
+                        .appendQueryParameter("mode", "json")
+                        .appendQueryParameter("units","metric")
+                        .appendQueryParameter("cnt","7")
+                        .appendQueryParameter("APPID",API_Key);
+
+                URL requestUrl = new URL(ub.toString());  // set link
                 HttpURLConnection connection = (HttpURLConnection)requestUrl.openConnection(); // create connection
                 connection.setRequestMethod("GET");  // set HTTP Method type
                 connection.connect();  // connect to server
@@ -161,7 +242,7 @@ public class MainActivityFragment extends Fragment {
                     Log.i("Unsuccessful", "Unsuccessful HTTP Response Code: " + responseCode);
                 }
             } catch (MalformedURLException e) {
-                Log.e("Wrong URL", "Error processing API URL", e);
+                Log.e("Wrong URL", "Error processing  API URL", e);
             } catch (IOException e) {
                 Log.e("Error", "Error connecting to API", e);
             }
