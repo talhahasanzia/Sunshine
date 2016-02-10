@@ -161,7 +161,7 @@ public class MainActivityFragment extends Fragment {
                     Log.i("Unsuccessful", "Unsuccessful HTTP Response Code: " + responseCode);
                 }
             } catch (MalformedURLException e) {
-                Log.e("Wrong URL", "Error processing Places API URL", e);
+                Log.e("Wrong URL", "Error processing API URL", e);
             } catch (IOException e) {
                 Log.e("Error", "Error connecting to API", e);
             }
