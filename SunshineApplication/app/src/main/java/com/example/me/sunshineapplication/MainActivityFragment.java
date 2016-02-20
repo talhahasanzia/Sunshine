@@ -1,8 +1,10 @@
 package com.example.me.sunshineapplication;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -16,12 +18,16 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.Toolbar;
+
+import org.json.JSONException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,6 +37,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -38,8 +45,9 @@ import java.util.List;
  */
 public class MainActivityFragment extends Fragment {
 
-
+    ArrayAdapter<String> mAdapter;
     String ZipCode="94043";
+    String forecast=null;
     String Source_URL="http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7";
     String API_Key="b45c4a4178ceaa8cfbf6a36b2156cf34";
 
@@ -112,7 +120,7 @@ public class MainActivityFragment extends Fragment {
 
 
         if(item.getItemId()==R.id.action_refresh) {
-            //new MainActivityFragment.NetworkTask().execute(ZipCode);
+            new MainActivityFragment.NetworkTask().execute(ZipCode);
             return true;
         }
         else
@@ -147,14 +155,12 @@ public class MainActivityFragment extends Fragment {
 
                 List<String> dataList = new ArrayList<String>();
 
-                dataList.add("One data");
-                dataList.add("Two data");
-                dataList.add("Three data");
-                dataList.add("Big data");
+                dataList.add("Refresh to get data..");
+
 
                 dataList.add(ub.toString());
 
-                ArrayAdapter<String> mAdapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_layout, R.id.list_text_view,dataList);
+               mAdapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_layout, R.id.list_text_view,dataList);
                 lv.setAdapter(mAdapter);
 
 
@@ -182,6 +188,10 @@ public class MainActivityFragment extends Fragment {
     // async tasks allows code to run in background
     class NetworkTask extends AsyncTask<String, Void, String>
     {
+
+
+
+
         String finalData=null;
         @Override
         protected void onPreExecute() {
@@ -261,6 +271,46 @@ public class MainActivityFragment extends Fragment {
             {
 
                 Log.d("Result is",s); // show current data in logcat
+                try {
+                    String[] data = WeatherData.getWeatherDataFromJson(s, 7);
+                    List<String> dataList = new ArrayList<String>(Arrays.asList(data));
+                    ListView lv = (ListView) rootView.findViewById(R.id.listView);
+                    mAdapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_layout, R.id.list_text_view,dataList);
+                    lv.setAdapter(mAdapter);
+
+                    lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+
+                            forecast=mAdapter.getItem(position);
+                            Toast t=Toast.makeText(getContext(),"Launching...",Toast.LENGTH_SHORT);
+                            t.show();
+
+                            Intent i=new Intent(getActivity(),DetailsActivity.class);
+                            i.putExtra("ForecastData", forecast);
+                            startActivity(i);
+
+
+
+                        }
+                    });
+
+
+
+
+                }
+                catch (JSONException j_ex)
+                {
+
+                    Log.d("JOSN Exception",j_ex.getMessage().toString());
+                }
+                catch (Exception ex)
+                {
+
+                    Log.d("Unexpexted Error",ex.getMessage().toString());
+
+                }
 
             }
             else
