@@ -121,8 +121,12 @@ public class MainActivityFragment extends Fragment {
 
         if(item.getItemId()==R.id.action_refresh) {
             new MainActivityFragment.NetworkTask().execute(ZipCode);
+
+
+
             return true;
         }
+
         else
             return false;
 
@@ -284,8 +288,6 @@ public class MainActivityFragment extends Fragment {
 
 
                             forecast=mAdapter.getItem(position);
-                            Toast t=Toast.makeText(getContext(),"Launching...",Toast.LENGTH_SHORT);
-                            t.show();
 
                             Intent i=new Intent(getActivity(),DetailsActivity.class);
                             i.putExtra("ForecastData", forecast);

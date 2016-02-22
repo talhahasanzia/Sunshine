@@ -8,7 +8,9 @@
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->
-
+    <string name="pref_location" translatable="false">Location</string>
+    <string name="pref_default_value" translatable="false">94043</string>
+    <string name="pref_key" translatable="false">location</string>
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
 
