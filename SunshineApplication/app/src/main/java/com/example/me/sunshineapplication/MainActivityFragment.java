@@ -2,8 +2,11 @@ package com.example.me.sunshineapplication;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -54,22 +57,7 @@ public class MainActivityFragment extends Fragment {
     View rootView=null;
 
 
-   private TextWatcher tw=new TextWatcher() {
-       @Override
-       public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-       }
-
-       @Override
-       public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-       }
-
-       @Override
-       public void afterTextChanged(Editable s) {
-            ZipCode=s.toString();
-       }
-   };
 
 
     public MainActivityFragment() {
@@ -83,24 +71,6 @@ public class MainActivityFragment extends Fragment {
 
         setHasOptionsMenu(true);
 
-
-        //Toolbar tb=(Toolbar)getActivity().findViewById(R.id.toolbar);
-
-        TextView toolbarTextView  = (TextView) ((MainActivity) this.getActivity()).findViewById(R.id.toolbar);
-        if( toolbarTextView==null)
-            Log.d("Toolbar","Toolbar not found");
-        else
-            Log.d("Toolbar","Toolbar found");
-        try {
-            //EditText et = (EditText) tb.findViewById(R.id.myEditText);
-        }
-        catch (Exception ec)
-        {
-
-
-            Log.d("Edit Text"," New Edit Text not found",ec);
-        }
-      //    et.addTextChangedListener(tw);
 
 
         return rootView;
@@ -116,20 +86,58 @@ public class MainActivityFragment extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        updateWeather();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
 
         if(item.getItemId()==R.id.action_refresh) {
-            new MainActivityFragment.NetworkTask().execute(ZipCode);
+
+
+            updateWeather();
 
 
 
             return true;
         }
+        if(item.getItemId()==R.id.pref_location)
+        {
 
+            openPreferredLocationInMap();
+            return true;
+
+        }
         else
             return false;
 
+    }
+
+    private void openPreferredLocationInMap() {
+        SharedPreferences sharedPrefs =
+                PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String location = sharedPrefs.getString(
+                getString(R.string.pref_location_key),
+                "94043");
+
+        // Using the URI scheme for showing a location found on a map.  This super-handy
+        // intent can is detailed in the "Common Intents" page of Android's developer site:
+        // http://developer.android.com/guide/components/intents-common.html#Maps
+        Uri geoLocation = Uri.parse("geo:0,0?").buildUpon()
+                .appendQueryParameter("q", location)
+                .build();
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(geoLocation);
+
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivity(intent);
+        } else {
+            Log.d("Maps", "Couldn't call " + location + ", no receiving apps installed!");
+        }
     }
 
     @Override
@@ -189,6 +197,18 @@ public class MainActivityFragment extends Fragment {
             Log.d("Null Rootview", "rootview is null");
         }
     }
+
+    void updateWeather()
+    {
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        ZipCode=prefs.getString("location","94000");
+        new MainActivityFragment.NetworkTask().execute(ZipCode);
+
+    }
+
+
+
     // async tasks allows code to run in background
     class NetworkTask extends AsyncTask<String, Void, String>
     {

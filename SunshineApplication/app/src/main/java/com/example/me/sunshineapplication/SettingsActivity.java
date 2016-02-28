@@ -19,6 +19,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 
 
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key)));
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_unit_key)));
       //  setContentView(R.layout.preference_layout);
 
 

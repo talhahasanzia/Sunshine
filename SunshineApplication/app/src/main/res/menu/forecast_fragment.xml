@@ -5,4 +5,10 @@
     android:title="@string/refresh"
     app:showAsAction="never"
     />
+
+    <item android:id="@+id/pref_location"
+        android:title="My Location"
+        app:showAsAction="never"
+        />
+
 </menu>
