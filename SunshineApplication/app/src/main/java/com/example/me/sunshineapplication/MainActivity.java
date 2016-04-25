@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayShowTitleEnabled(true);
 
+        Log.d("Orientation Change","In on create");
 
 
     }
@@ -31,6 +33,37 @@ public class MainActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d("Orientation Change", "In on start");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("Orientation Change", "In on resume");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d("Orientation Change", "In on pause");
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d("Orientation Change", "In on stop");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d("Orientation Change", "In on destroy");
     }
 
     @Override

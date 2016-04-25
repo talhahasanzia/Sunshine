@@ -51,7 +51,7 @@ public class MainActivityFragment extends Fragment {
     ArrayAdapter<String> mAdapter;
     String ZipCode="94043";
     String forecast=null;
-    String Source_URL="http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7";
+    String Source_URL="http://api.openweathermap.org/data/2.5/forecast/daily?q=Karachi,pk&mode=json&units=metric&cnt=7";
     String API_Key="b45c4a4178ceaa8cfbf6a36b2156cf34";
 
     View rootView=null;
@@ -276,7 +276,7 @@ public class MainActivityFragment extends Fragment {
                     Log.i("Unsuccessful", "Unsuccessful HTTP Response Code: " + responseCode);
                 }
             } catch (MalformedURLException e) {
-                Log.e("Wrong URL", "Error processing  API URL", e);
+                Log.e("Wrong URL", e.getMessage().toString(), e);
             } catch (IOException e) {
                 Log.e("Error", "Error connecting to API", e);
             }
